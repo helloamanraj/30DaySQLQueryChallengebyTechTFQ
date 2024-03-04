@@ -23,9 +23,9 @@ Solution2:
 ```sql
 
 select * from 
-(select car from footer where car is not null order by id desc limit 1) as x
-cross join (select length from footer where length is not null order by id desc limit 1 )y
-cross join (select width from footer where width is not null order by id desc limit 1)z
-cross join (select height from footer where height is not null order by id desc limit 1)a
+(select car from footer where car is not null order by id desc limit 1) as Car
+cross join (select length from footer where length is not null order by id desc limit 1 ) lenght
+cross join (select width from footer where width is not null order by id desc limit 1) Width
+cross join (select height from footer where height is not null order by id desc limit 1) Height
 ```
 

@@ -1,0 +1,25 @@
+--SELECT * FROM company ;  
+with recursive cte as
+		(select c.employee, c.manager, t.teams
+		 from company c
+		 cross join cte_teams t 
+		 where c.manager is null
+		 union 
+		 select c.employee, c.manager
+		 /*, case when t.teams is not null then t.teams 
+		 		else case when c.manager = cte.employee then cte.teams end 
+		   end as teams*/
+		 , coalesce(t.teams, cte.teams) as teams 
+		 from company c
+		 join cte on cte.employee = c.manager
+		 left join cte_teams t on t.employee = c.employee
+		),
+	cte_teams as
+		(SELECT mng.employee, concat('Team ', row_number() over(order by mng.employee)) as teams
+		FROM company root
+		join company mng on root.employee = mng.manager
+		where root.manager is null)
+select teams, string_agg(employee, ', ') as members
+from cte 
+group by teams
+order by teams

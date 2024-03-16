@@ -1,0 +1,42 @@
+
+-- SOLUTION
+with all_friends as
+	(SELECT friend1,friend2 FROM Friends
+	union 
+	SELECT friend2 ,friend1 FROM Friends)
+select distinct f.friend1, f.friend2 --, cf.friend2 as mutual_frnd
+, count(cf.friend1) over(partition by f.friend1, f.friend2 order by f.friend1, f.friend2
+						 range between unbounded preceding and unbounded following) as mutual_friends 
+from friends f 
+left join all_friends cf 
+		on f.friend1 = cf.friend1
+		and cf.friend2 in ( select cf2.friend2
+							from all_friends cf2
+							where f.friend2 = cf2.friend1);
+
+
+
+
+
+-- Alternate Solution using recursion (not recommended for this problem)
+with recursive cte as
+		(select cast('' as varchar) users, cast('' as varchar) friends, 0 rn, cast(0 as bigint) mutual_friends
+		 union
+		 select f.friend1, f.friend2, (cte.rn+1) as rn 
+		 , count(cf.friend1) over(order by cf.friend1 
+								  range between unbounded preceding and unbounded following) as mutual_friends
+		 from cte
+		 join (select row_number() over(order by friend1) as rn, * from friends) f 
+		 		on f.rn = cte.rn+1
+		 left join cte_friends cf on f.friend1 = cf.friend1
+								 and cf.friend2 in (  select cf2.friend2
+														from cte_friends cf2
+														where f.friend2 = cf2.friend1)
+		),
+	cte_friends as 
+		(SELECT friend1,friend2 FROM Friends
+		union 
+		SELECT friend2 ,friend1 FROM Friends)
+select * from cte
+where rn>0;
+

@@ -11,7 +11,6 @@ union all
 select serial_no + 1 from rt join 
 cte where serial_no < maxi
 )
-
 select serial_no as missing_serial_no from rt
 where serial_no not in (select serial_no from invoice)
 ```

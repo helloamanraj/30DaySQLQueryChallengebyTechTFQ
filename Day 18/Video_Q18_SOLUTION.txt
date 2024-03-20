@@ -1,0 +1,6 @@
+
+SELECT  e.id, e.name as employee_name, COUNT(distinct event_name) as no_of_events
+FROM events ev
+join employees e on e.id=ev.emp_id
+GROUP BY e.id, e.name
+HAVING COUNT(distinct event_name) = (SELECT COUNT(distinct event_name) FROM events);

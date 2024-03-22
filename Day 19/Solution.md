@@ -8,7 +8,6 @@ STR_TO_DATE(actual_delivery, '%d-%m-%Y %H:%i') as actual_delivery, no_of_pizzas,
 case when expected_delivery < actual_delivery then no_of_pizzas else 0 end as flag
 from pizza_delivery
 )
-
 select date_format((order_time),'%b-%y') as period, 
 round(100*sum(CASE
     WHEN TIMESTAMPDIFF(MINUTE, order_time, actual_delivery) > 30 THEN 1

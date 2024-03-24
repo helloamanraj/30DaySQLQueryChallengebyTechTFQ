@@ -1,0 +1,11 @@
+
+
+select id, country, age
+from (
+	select * 
+	, row_number() over(partition by country order by age) as age_rnk
+	, cast(count(id) over(partition by country order by age
+						range between unbounded preceding and unbounded following) as decimal) as total_ppl
+	from people) x
+where age_rnk >= total_ppl/2 and age_rnk <= (total_ppl/2)+1;
+

@@ -1,0 +1,27 @@
+
+
+with cte_teams as 
+		(select home_team as teams from ipl_results 
+		union select away_team as teams from ipl_results),
+	cte as
+		(select dates
+		, t.teams as teams
+		, result 
+		, row_number() over(partition by t.teams order by dates) as id
+		from ipl_results r
+		join cte_teams t on r.home_team=t.teams or r.away_team=t.teams),
+	cte_diff as
+		(select dates,teams, result, id
+		, id - row_number() over(partition by teams order by id) as diff
+		from cte
+		where result = teams),
+	cte_final as 
+		(select *
+		,count(1) over(partition by teams, diff order by id
+					  range between unbounded preceding and unbounded following) as streak
+		from cte_diff)
+select t.teams, coalesce(max(streak),0) as max_winning_streak
+from cte_teams t
+left join cte_final f on f.teams=t.teams
+group by t.teams
+order by max_winning_streak desc;

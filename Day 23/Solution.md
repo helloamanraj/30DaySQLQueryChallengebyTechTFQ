@@ -26,3 +26,29 @@ with recursive cte as (
  select bus_id, onboarded_bus as passengers_cnt from cte
  order by bus_id
  ```
+ Solution2:
+ ```sql
+
+ with cte as (
+ select b.bus_id, b.arrival_time as bus_arrival, p.arrival_time as passenger_arrival , capacity,passenger_id,
+ case when (b.arrival_time - p.arrival_time) = min(b.arrival_time - p.arrival_time) over (partition by passenger_id) then 1 else 0 end as diff
+ from buses as b
+ join passengers as p on p.arrival_time <= b.arrival_time
+ )
+ 
+ ,cte2 as ( 
+select
+bus_id, max(bus_arrival) as arrival_time, max(capacity)  as capacity
+,sum(diff) as cnt
+from cte
+group by bus_id
+)
+,cte3 as (
+select *,
+case when cnt - capacity < 0 then lag(cnt - capacity) over(order by arrival_time) else cnt - capacity end as diff
+from cte2
+)
+select bus_id
+,case when capacity < cnt then capacity else diff end as passenger_cnt
+from cte3
+```

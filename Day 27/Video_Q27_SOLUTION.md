@@ -8,8 +8,6 @@ with recursive cte as (
         from vacation_plans as v
 		inner join leave_balance as l on v.emp_id = l.emp_id
 		)
-
-
 		select id, emp_id, from_dt, to_dt, leave_balance, diff_without_weekends ,(leave_balance - diff_without_weekends) as remaining_balance , rn from cte_data
         where rn=1
 		

@@ -1,0 +1,15 @@
+with cte as 
+		(select distinct first_value(times) over(partition by grp order by grp,times) as log_on
+		, last_value(times) over(partition by grp order by grp,times
+								range between unbounded preceding and unbounded following) as last_log_on
+		from (	select times, status, rn-row_number() over(order by times) as grp
+				from (select *, row_number() over(order by times) as rn
+					  from login_details) x
+				where status='on') y),
+	cte_final as 
+		(select log_on, lead(times) over(order by times) as log_off
+		from login_details l 
+		left join cte on cte.last_log_on=l.times)
+select *, extract(min from (log_off-log_on)) as duration
+from cte_final 
+where log_on is not null;

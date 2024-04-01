@@ -1,0 +1,24 @@
+
+-- SOLUTION 1: in PostgreSQL 
+select id, string_agg(lengths,',') as lengths
+from (select id, cast(length(unnest(string_to_array(items,','))) as varchar) as lengths
+	  from item) x
+group by id
+order by id;
+
+
+-- SOLUTION 2: in PostgreSQL 
+select id, string_agg(val,',') as lengths
+from item
+cross join lateral (select length(unnest(string_to_array(items,',')))::varchar as val) x
+group by id
+order by id
+
+
+
+-- SOLUTION in Microsoft SQL Server
+select id, STRING_AGG(len(value),',') as lengths
+from item
+cross APPLY string_split(items,',')
+group by id;
+

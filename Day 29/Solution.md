@@ -1,12 +1,15 @@
 Solution1: 
 ```sql
 with cte as (
-select *, LAG(status,1) over (order by times) as previous_status from login_details
+select *, lag(status,1) over (order by times) as prev_status
+from login_details 
+)
+,cte2 as (select * from cte
+where times not in (select times from cte where status = 'off' and prev_status = 'off')
 )
 
-select *, (case when  previous_status='on' then 1 else 0 end) as checks,
-sum(case when status='on' and previous_status='off' then 1 else 0 end) over (order by times) as group_key from cte
-
-  select min(times) as log_on,max(times) as log_off, sum(checks) as Duration from cte
-  group by group_key
+select min(times) as log_in_time, max(times) as log_out_time,  FLOOR(TIME_TO_SEC(TIMEDIFF(MAX(times), MIN(times))) / 60) as duration
+from (select times, status, sum(case when status = 'on' and prev_status = 'off' then 1 else 0 end) over (order by times) as grp 
+from cte2) as x
+group by grp
 ```  

@@ -22,7 +22,6 @@ inner join subjects as s on cte.s1 = s.id
 inner join students as sd on cte.student_id = sd.roll_no
 order by student_id
 )
-
 ,cte3 as (select  student_id,
            GROUP_CONCAT(subject) AS failed_subjects
            from cte2

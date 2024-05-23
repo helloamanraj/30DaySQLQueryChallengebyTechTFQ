@@ -39,7 +39,6 @@ CASE
        END AS result
 from cte2 
 left join cte3 on cte2.student_id = cte3.student_id 
-
 ```
 
 

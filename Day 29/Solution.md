@@ -15,7 +15,6 @@ group by grp
 ```  
 Solution2:
 ```sql
-
 with cte as (
 select *,
        row_number() over(order by times) as rn,

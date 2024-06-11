@@ -23,7 +23,6 @@ FROM (
     ORDER BY seq.digit
 ) AS x
 )
-
 ,cte as (
     SELECT 
         FLOOR((SQRT(8 * (ROW_NUMBER() OVER () - 1) + 1) - 1) / 2) + 1 AS group_num, 

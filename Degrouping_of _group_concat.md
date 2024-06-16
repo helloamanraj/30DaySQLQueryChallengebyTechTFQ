@@ -19,3 +19,19 @@ inner join
 on length(replace(colors, ',', '')) <=  length(colors) - n.digit
 order by id
 ```
+
+Solution2:
+
+```sql
+
+set @row := -1;
+
+select id,  substring_index(substring_index(colors, ',', n.digit + 1 ),',',-1) as color
+from color_table
+inner join 
+( SELECT @row := @row + 1 AS digit
+        FROM information_schema.columns
+        LIMIT 3) as n
+on length(replace(colors, ',', '')) <=  length(colors) - n.digit
+order by id
+```

@@ -34,7 +34,6 @@ select *, row_number() over (partition by employee, status order by dates ) as r
 dates - row_number() over (partition by employee order by employee) as diff from emp_attendance
 order by  employee, dates
 )
-
 select employee, min(dates) as from_date, max(dates) as to_date, status from cte
 group by employee, status, diff
 ```

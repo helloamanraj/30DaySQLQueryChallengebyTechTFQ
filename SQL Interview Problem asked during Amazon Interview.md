@@ -8,7 +8,6 @@ create table emp_attendance
 	dates 		date,
 	status 		varchar(20)
 );
-
 insert into emp_attendance values('A1', '2024-01-01', 'PRESENT');
 insert into emp_attendance values('A1', '2024-01-02', 'PRESENT');
 insert into emp_attendance values('A1', '2024-01-03', 'PRESENT');

@@ -12,7 +12,6 @@ from Friends f
 left join cte c
 on f.Friend1 = c.Friend1 and c.Friend2<>f.Friend2)
 
-
 select Friend1 ,Friend2, count(common) as mutual_friends
 from cte2
 group by Friend1 ,Friend2

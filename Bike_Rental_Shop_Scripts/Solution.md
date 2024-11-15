@@ -160,3 +160,66 @@ order by count(1) desc;
 
 Solution 3:
 ```sql
+select id, category, price_per_hour as old_price_per_hour,
+case when category = 'mountain bike' then price_per_hour - price_per_hour * 0.2 
+when category = 'electric' then price_per_hour - price_per_hour * 0.10
+else price_per_hour - price_per_hour * 0.50 end as dis_per_hour_price,
+price_per_day as old_price_per_day,
+case when category = 'mountain bike' then price_per_day - price_per_day * 0.5 
+when category = 'electric' then price_per_hour - price_per_hour * 0.20
+else price_per_hour - price_per_hour * 0.50 end as dis_per_hour_price
+from bike;
+ ```
+
+Solution 4:
+
+```sql
+ select category,
+ sum(case when status = 'available' then 1 end) as available_bikes_count,
+ sum(case when status = 'rented' then 1 end) as bike_not_available 
+ from bike
+ group by category
+ ```
+
+
+ Solution 5:
+
+ ```sql
+ select year(start_timestamp) as year, month(start_timestamp) as month , 
+sum(total_paid) from rental
+group by year(start_timestamp),  month(start_timestamp)
+with rollup
+order by year, month
+```
+
+Solution 6:
+
+```sql
+select year(start_date) as year , month(start_date) as month, name as membership_type_name , sum(total_paid) as total_revenue
+from membership as m inner join membership_type as mt
+on m.id = mt.id
+group by year(start_date) , month(start_date), name
+
+```
+
+Solution 7:
+
+```sql
+select month(start_date) as month, name as membership_type_name, sum(total_paid) as total_revenue
+from membership as m inner join membership_type as mt
+on m.id = mt.id
+where year(start_date) = 2023
+group by month(start_date), name with rollup
+```
+
+Solution 8:
+```sql
+select customer_id, count(bike_id) as customer_count,
+case 
+when count(bike_id) > 10 then 'more than 10'
+when count(bike_id) > 5 and count(bike_id) <10 then 'between 5 to 10'
+else 'fewer than 5' end as rental_count_category
+from rental
+group by customer_id
+
+```
